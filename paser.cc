@@ -74,7 +74,7 @@ void factor(){
 		exp();
 		if(token.type==RPAREN){
 			token = lexer.GetToken();
-		}	
+		}
 		else{
 			Panic("should be )");
 		}
@@ -87,7 +87,7 @@ void factor(){
 	}
 	else if(token.type==CHAR){
 		token = lexer.GetToken();
-	}	
+	}
 	else{
 		Panic("should be ( or ID or num or char");
 	}
@@ -123,11 +123,13 @@ void factor_combine(){
 }
 void factor_recur(){
 	while(token.type==MULT||token.type==DIV||token.type==MOD){
+        token = lexer.GetToken();
 		factor();
 	}
 }
 void term(){
 	while(token.type==PLUS||token.type==MINUS){
+        token = lexer.GetToken();
 		factor_combine();
 	}
 }
@@ -135,7 +137,7 @@ void param_decl(){
 	if(token.type==INT||token.type==CHAR){
 		decl();
 		if(token.type==COMMA){
-			decl_clos(); 
+			decl_clos();
 		}
 	}
 	else if(token.type==VOID){
@@ -165,7 +167,6 @@ void decl_clos(){
 	}
 }
 void func_block(){
-	token.Print();
 	decl_sentence_clos();
 	func_block_clos();
 }
@@ -185,7 +186,7 @@ void decl_sentence(){
 }
 void func_block_clos(){
 	while(token.type==ID||token.type==FOR||token.type==IF||token.type==RETURN||token.type==SCAN||token.type==PRINT){
-		switch(token.type){
+        switch(token.type){
 			case ID:assign_func();break;
 			case FOR:for_loop();break;
 			case IF:if_sentence();break;
@@ -227,8 +228,17 @@ void assign_func_call(){
 			Panic("should be )");
 		}
 	}
+	else if(token.type==PLUS2||token.type==MINUS2){
+        suffix_sym();
+        if(token.type==SEMICOLON){
+            token = lexer.GetToken();
+        }
+        else{
+            Panic("should be ;");
+        }
+	}
 	else{
-		Panic("should be == or (");
+		Panic("should be == or ( or ++ or --");
 	}
 }
 void param_list(){
@@ -244,9 +254,6 @@ void param_clos(){
 void param(){
 	if(token.type==ID || token.type==NUM || token.type==CHAR){
 		token = lexer.GetToken();
-	}
-	else{
-		Panic("should be ID or num or char");
 	}
 }
 void parse_string(){
@@ -402,11 +409,7 @@ void else_sentence(){
 			Panic("should be {");
 		}
 	}
-	else{
-		Panic("should be else");
-	}
 }
-
 void func_return(){
 	if(token.type==RETURN){
 		token = lexer.GetToken();
@@ -422,15 +425,13 @@ void func_return(){
 		Panic("should be return");
 	}
 }
-
 void scan_sentence(){
 	if(token.type==SCAN){
 		token = lexer.GetToken();
 		if(token.type==LPAREN){
 			token = lexer.GetToken();
-
 			if(token.type == ID) {
-               			token = lexer.GetToken();	
+                token = lexer.GetToken();
 				if(token.type==RPAREN){
 					token = lexer.GetToken();
 					if(token.type==SEMICOLON){
@@ -461,8 +462,13 @@ void print_sentence(){
 		token = lexer.GetToken();
 		if(token.type==LPAREN){
 			token = lexer.GetToken();
-			if(token.type==INT||token.type==CHAR){
-				var();
+			if(token.type==ID||token.type==NUM||token.type==CHAR){
+                if(token.type==ID){
+                    var();
+                }
+                else{
+                    token = lexer.GetToken();
+                }
 				if(token.type==RPAREN){
 					token = lexer.GetToken();
 					if(token.type==SEMICOLON){
@@ -477,13 +483,19 @@ void print_sentence(){
 				}
 			}
 			else if(token.type==STRING){
-				string();
+				token = lexer.GetToken();
 				if(token.type==RPAREN){
 					token = lexer.GetToken();
+					if(token.type==SEMICOLON){
+					token = lexer.GetToken();
+                    }
+                    else{
+                        Panic("should be ;");
+                    }
 				}
 				else{
 					Panic("should be )");
-				}				
+				}
 			}
 			else{
 				Panic("should be int or char or string");
@@ -504,6 +516,7 @@ void Panic(string info){
 }
 
 int main() {
-     token = lexer.GetToken();
-     func();
+    freopen("test.txt", "r", stdin);
+    token = lexer.GetToken();
+    func();
 }

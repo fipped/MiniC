@@ -1,10 +1,11 @@
 #include "lexer.h"
 #include <iostream>
+#include<stdio.h>
 
 using namespace std;
 
 std::string TokenName[] = {
-    "ERROR", "if", "else", "while", "for", 
+    "ERROR", "if", "else", "while", "for",
     "switch", "case", "default",
     "break", "return",
     "void", "int", "char",
@@ -17,7 +18,7 @@ std::string TokenName[] = {
     "NUM", "ID", "EOF",
 };
 std::string reserve_list[] = {
-    "if", "else", "while", "for", 
+    "if", "else", "while", "for",
     "switch", "case", "default",
     "break", "return",
     "void", "int", "char",
@@ -33,7 +34,7 @@ void Token::Print(){
         case ID:case NUM: cout << str; break;
         case CHAR: cout << "'" << str << "'"; break;
         case STRING: cout << '"' << str << '"'; break;
-        default: 
+        default:
             cout << TokenName[type]; break;
     }
     cout << " at line " << line << endl;
@@ -59,7 +60,7 @@ Token Lexer::GetToken(){
     token.str = "";
     switch(ch){
         case EOF: token.type = END_OF_FILE; return token;
-        case '!': 
+        case '!':
             ch = nextChar();
             if(ch == '='){
                 token.type = NOTEQUAL;
@@ -67,7 +68,7 @@ Token Lexer::GetToken(){
             }
             pushChar(ch);
             return token;
-        case '=': 
+        case '=':
             ch = nextChar();
             if(ch == '='){
                 token.type = EQUAL;
@@ -140,7 +141,7 @@ Token Lexer::GetToken(){
         case '%': token.type = MOD; return token;
         case '[': token.type = LBRACE; return token;
         case ']': token.type = RBRACE; return token;
-        case '\'': 
+        case '\'':
             ch = nextChar();
             if(ch == '\'') return token;
             token.str += ch;
@@ -169,10 +170,10 @@ Token Lexer::GetToken(){
                     return token;
                 }
             }
-            token.type = STRING; 
+            token.type = STRING;
             return token;
         }
-        default: 
+        default:
             if(isDigit(ch)){
                 while(isDigit(ch)){
                     token.str += ch;
@@ -237,13 +238,13 @@ void Lexer::pushChar(char ch){
     buffer.push_back(ch);
 }
 
-int main(){
-    Lexer lexer;
-    Token token = lexer.GetToken();
-    token.Print();
-    while(token.type != END_OF_FILE){
-        token=lexer.GetToken();
-        token.Print();
-    }
-    return 0;
-}
+// int main(){
+//     Lexer lexer;
+//     Token token = lexer.GetToken();
+//     token.Print();
+//     while(token.type != END_OF_FILE){
+//         token=lexer.GetToken();
+//         token.Print();
+//     }
+//     return 0;
+// }
